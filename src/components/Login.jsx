@@ -1,34 +1,55 @@
 import React, { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 function Login() {
     const [persons, setPersons] = useState([]);
-    const [person, setPerson] = useState(null);
-    const [email, setEmail] = useState("Email");
+    const [person, setPerson] = useState({ email: "", password: "" });
     function changeHandler(e) {
-        person = setPerson({...person, [e.name]: [e.value]});
-        console.log(person);
+        const name = e.target.name;
+        const value = e.target.value;
+        setPerson({ ...person, [name]: value });
     }
 
     function submitHandler(e) {
         e.preventDefault();
-        persons = [...persons, person];
-        console.log(persons);
+        const { email, password } = person;
+        if (email && password) {
+            setPersons([...persons, { ...person, id: uuidv4() }]);
+            person.email = '';
+            person.password = '';
+        }
     }
 
     return (
-        <form action="submit" className="form">
-            <div className="el email">
-                <label htmlFor="email">Email</label>
-                <input type="text" name="email"/>
+        <>
+            <form action="submit" className="form">
+                <div className="el email">
+                    <label htmlFor="email">Email</label>
+                    <input
+                        type="text"
+                        name="email"
+                        value={person.email}
+                        onChange={changeHandler}
+                    />
+                </div>
+                <div className="el password">
+                    <label htmlFor="password">Password</label>
+                    <input
+                        type="password"
+                        name="password"
+                        value={person.password}
+                        onChange={changeHandler}
+                    />
+                </div>
+                <button type="submit" className="btn" onClick={submitHandler}>
+                    Submit
+                </button>
+            </form>
+            <div className="persons">
+            {persons.length ? "Logins - Activity" : null}
+                {persons.map((item) => <div className="log">{item.email}: {item.password}</div> )}
             </div>
-            <div className="el password">
-                <label htmlFor="password">Password</label>
-                <input type="password" name="password"/>
-            </div>
-            <button type="submit" className="btn" onClick={submitHandler}>
-                Submit
-            </button>
-        </form>
+        </>
     );
 }
 
